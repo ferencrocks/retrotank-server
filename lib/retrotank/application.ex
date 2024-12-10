@@ -13,7 +13,8 @@ defmodule Retrotank.Application do
       # Starts a worker by calling: Retrotank.Worker.start_link(arg)
       # {Retrotank.Worker, arg}
 
-      {Plug.Cowboy, scheme: :http, plug: Retrotank.Router, options: [port: 8080]}
+      {Plug.Cowboy, scheme: :http, plug: Retrotank.Router, options: [port: 8080]},
+      Retrotank.Game.State.GameState
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
