@@ -12,7 +12,9 @@ defmodule Retrotank.Game.Core.Movement do
     %{ movement | direction: new_direction }
   end
 
-  def all_directions do
-    @directions
+  defmacro all_directions do
+    quote do
+      [:up, :down, :left, :right]
+    end
   end
 end

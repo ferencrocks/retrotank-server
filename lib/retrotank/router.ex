@@ -18,7 +18,7 @@ defmodule Retrotank.Router do
     send_resp(conn, 200, "Hello Maxik")
   end
 
-  get "/ws" do
+  get "/player/ws" do
     conn
     |> WebSockAdapter.upgrade(Retrotank.Game.Server.Websocket, [], timeout: 60_000)
     |> halt()

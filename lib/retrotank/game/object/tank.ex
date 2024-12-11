@@ -8,10 +8,10 @@ defmodule Retrotank.Game.Object.Tank do
   alias Core.Health
 
 
-  defstruct position: %Coord{},
+  defstruct id: Retrotank.Utils.Random.uuid(),
+    position: %Coord{},
     size: %Size{width: @width, height: @height},
     movement: %Movement{},
     health: %Health{}
-
 
 end

@@ -56,4 +56,5 @@ defmodule Retrotank.Game.Core.Object do
 
     end
   end
+
 end
