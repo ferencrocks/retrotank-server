@@ -11,14 +11,14 @@ defmodule Retrotank.Game.Core.Player do
   require Retrotank.Game.Core.Movement
 
 
-  def init(game_id) do
-    object = %Retrotank.Game.Object.Tank{}
-    player = %Retrotank.Game.Core.Player{
-      game_id: game_id,
-      object_id: object.id
-    }
+  defimpl Jason.Encoder do
+    def encode(player, opts) do
+      Jason.Encode.map(%{ id: player.id, nickname: player.nickname }, opts)
+    end
+  end
 
-    {player, object}
+  def assign_object(player, %{ id: object_id }) do
+    %{ player | object_id: object_id }
   end
 
   def commit_state({player, player_object}) do

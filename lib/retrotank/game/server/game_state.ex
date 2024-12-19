@@ -2,8 +2,13 @@ defmodule Retrotank.Game.Server.GameState do
   use GenServer
   require Logger
 
+  #alias Retrotank.Game.Core.Game
+  #alias Retrotank.Game.Core.Player
+  #alias Retrotank.Game.Core.Players
+
   alias Retrotank.Game.Core.Player
-  alias Retrotank.Game.Core.Players
+  alias Retrotank.Game.Object.Tank
+  alias Retrotank.Game.State.GamesRegistry
 
 
   # Client
@@ -16,11 +21,13 @@ defmodule Retrotank.Game.Server.GameState do
   end
 
   def init(game_id) do
+    game = GamesRegistry.add(game_id, server_name(game_id))
+
     initial_state = %{
       players: %{},
       objects: %{},
 
-      game_id: game_id
+      game: game
     }
 
     {:ok, initial_state}
@@ -33,7 +40,19 @@ defmodule Retrotank.Game.Server.GameState do
     GenServer.call(server_name(game_id), :get_state)
   end
 
-  def join_player(game_id, player) when is_binary(game_id) do
+  def join_player(game_id, player, opts \\ []) when is_binary(game_id) do
+    if player.object_id do
+      unless object_by_id(game_id, player.object_id) do
+        {:error, :player_object_not_found}
+      end
+    else
+      tank_color = Keyword.get(opts, :tank_color, :green)
+      tank_size = Keyword.get(opts, :tank_size, 0)
+      {:ok, tank} = add_object(game_id, %Tank{props: %{ color: tank_color, size: tank_size }})
+
+      player = Player.assign_object(player, tank)
+    end
+
     Logger.debug "Player #{player.id} joined to game #{game_id} "
     GenServer.call(server_name(game_id), {:join_player, player})
   end
@@ -65,7 +84,7 @@ defmodule Retrotank.Game.Server.GameState do
   def handle_call({:join_player, player}, _from, state) do
     players = Map.put(state.players, player.id, player)
 
-    {:reply, :ok, %{ state | players: players }}
+    {:reply, {:ok, player}, %{ state | players: players }}
 
     # cond do
     #   Players.nickname_used?(state.players, nickname) ->
@@ -82,7 +101,7 @@ defmodule Retrotank.Game.Server.GameState do
   def handle_call({:add_object, object}, _from, state) do
     objects = Map.put(state.objects, object.id, object)
 
-    {:reply, :ok, %{ state | objects: objects }}
+    {:reply, {:ok, object}, %{ state | objects: objects }}
   end
 
   def handle_call({:get_object_by_id, object_id}, _from, state) do

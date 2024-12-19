@@ -23,6 +23,7 @@ defmodule Retrotank.MixProject do
   defp deps do
     [
       {:plug_cowboy, "~> 2.0"},
+      {:cors_plug, "~> 3.0"},
       {:websock_adapter, "~> 0.5"},
       {:jason, "~> 1.4"},
       {:uuid, "~> 1.1"}

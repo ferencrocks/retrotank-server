@@ -14,6 +14,8 @@ defmodule Retrotank.Application do
       # {Retrotank.Worker, arg}
 
       {Plug.Cowboy, scheme: :http, plug: Retrotank.Router, options: [port: 8080]},
+      {Retrotank.Game.State.GamesRegistry, %{}},
+      {Retrotank.Game.State.PlayersRegistry, %{}},
       {Retrotank.Game.Server.GameState, Retrotank.Utils.Random.uuid}
     ]
 
