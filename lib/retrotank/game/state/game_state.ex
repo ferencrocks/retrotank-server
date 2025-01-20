@@ -6,6 +6,7 @@ defmodule Retrotank.Game.State.GameState do
   #alias Retrotank.Game.Core.Player
   #alias Retrotank.Game.Core.Players
 
+  alias Retrotank.Game.Core.Object
   alias Retrotank.Game.State.PlayersRegistry
   alias Retrotank.Game.Core.Player
   alias Retrotank.Game.Object.Tank
@@ -27,8 +28,11 @@ defmodule Retrotank.Game.State.GameState do
     initial_state = %{
       players: MapSet.new(),
       objects: %{},
+      game: game,
 
-      game: game
+      internal: %{
+        last_object_id: 0
+      }
     }
 
     {:ok, initial_state}
@@ -58,7 +62,7 @@ defmodule Retrotank.Game.State.GameState do
   def join_player(game_id, player, opts \\ []) when is_binary(game_id) do
     tank_color = Keyword.get(opts, :tank_color, :green)
     tank_size = Keyword.get(opts, :tank_size, 0)
-    {:ok, tank} = add_object(game_id, %Tank{props: %{ color: tank_color, size: tank_size }})
+    {:ok, tank} = add_object(%Tank{props: %{ color: tank_color, size: tank_size }}, game_id)
 
     player = player
     |> Player.assign_game(game_id)
@@ -74,11 +78,15 @@ defmodule Retrotank.Game.State.GameState do
   end
 
 
-  def add_object(game_id, object) do
+  def add_object(object, game_id) when is_nil(object.id) do
     GenServer.call(server_name(game_id), {:add_object, object})
   end
 
-  def object_by_id(game_id, object_id) when is_binary(game_id) and is_binary(object_id) do
+  def update_object(object, game_id) when not is_nil(object.id) do
+    GenServer.call(server_name(game_id), {:update_object, object})
+  end
+
+  def object_by_id(game_id, object_id) when is_binary(game_id) and is_integer(object_id) do
     GenServer.call(server_name(game_id), {:get_object_by_id, object_id})
   end
 
@@ -109,10 +117,23 @@ defmodule Retrotank.Game.State.GameState do
     # end
   end
 
-  def handle_call({:add_object, object}, _from, state) do
-    objects = Map.put(state.objects, object.id, object)
+  def handle_call({:add_object, object}, _from, state) when is_nil(object.id) do
+    # New object. It gets an incremented id.
+    object_id = state.internal.last_object_id + 1
+    object = Object.assign_id(object, object_id)
+    state = %{ state | internal: %{ last_object_id: object_id } }
 
-    {:reply, {:ok, object}, %{ state | objects: objects }}
+    objects = Map.put(state.objects, object.id, object)
+    state = %{ state | objects: objects }
+
+    {:reply, {:ok, object}, state}
+  end
+
+  def handle_call({:update_object, object}, _from, state) when not is_nil(object.id) do
+    objects = Map.put(state.objects, object.id, object)
+    state = %{ state | objects: objects }
+
+    {:reply, {:ok, object}, state}
   end
 
   def handle_call({:get_object_by_id, object_id}, _from, state) do

@@ -6,9 +6,12 @@ defmodule Retrotank.Game.Core.Player do
     game_id: nil,
     object_id: nil
 
-  # @gamestate_module Retrotank.Game.Server.GameState
+  @gamestate_module Retrotank.Game.State.GameState
 
   require Retrotank.Game.Core.Movement
+
+  alias Retrotank.Game.State.PlayersRegistry
+  alias Retrotank.Game.Core.Player
 
 
   defimpl Jason.Encoder do
@@ -37,11 +40,21 @@ defmodule Retrotank.Game.Core.Player do
   # @doc """
   # Returns the player's game object.
   # """
-  # def object(player) when is_binary(player.game_id) and is_binary(player.object_id) do
-  #   call_gamestate(player.game_id, :object_by_id, [player.object_id])
-  # end
+  def object(player_id) when is_binary(player_id) do
+    player = player_by_id(player_id)
+    call_gamestate(player.game_id, :object_by_id, [player.object_id])
+  end
 
-  # defp call_gamestate(game_id, function, args) when is_binary(game_id) do
-  #   apply(@gamestate_module, function, [game_id | args])
-  # end
+  def object(%Player{id: player_id}) do
+    object(player_id)
+  end
+
+  defp call_gamestate(game_id, function_name, args) when is_binary(game_id) do
+    apply(@gamestate_module, function_name, [game_id | args])
+  end
+
+  defp player_by_id(player_id) do
+    {:ok, player} = PlayersRegistry.player_by_id(player_id)
+    player
+  end
 end

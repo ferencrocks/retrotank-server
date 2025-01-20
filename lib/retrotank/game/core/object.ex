@@ -2,14 +2,30 @@ defmodule Retrotank.Game.Core.Object do
   @type dir() :: :up | :down | :left | :right
 
   alias Retrotank.Game.Core.Movement
+  import Movement
 
-
-  def direction(%{ movement: %Movement{ direction: direction } }) do
-    direction
+  def id(object) do
+    object.id
   end
 
-  def direction(object, direction) do
-    %{ object | movement: %{ direction: direction } }
+  def assign_id(object, id) do
+    %{ object | id: id }
+  end
+
+  def direction(movement = %{ movement: %Movement{} }) do
+    Movement.direction(movement)
+  end
+
+  def direction(object = %{ movement: %Movement{} }, direction) when Movement.is_direction(direction) do
+    %{ object | movement: Movement.direction(object.movement, direction) }
+  end
+
+  def is_moving?(object = %{ movement: %Movement{} }) do
+    Movement.is_moving?(object.movement)
+  end
+
+  def is_moving(object = %{ movement: %Movement{} }, is_moving) when is_boolean(is_moving) do
+    %{ object | movement: Movement.is_moving(object.movement, is_moving) }
   end
 
 

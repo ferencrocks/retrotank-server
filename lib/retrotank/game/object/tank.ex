@@ -7,7 +7,7 @@ defmodule Retrotank.Game.Object.Tank do
   alias Core.Health
 
 
-  defstruct id: Retrotank.Utils.Random.uuid(),
+  defstruct id: nil,
     props: %{ color: nil, size: 0 },
     position: %Coord{},
     size: %Size{ width: @width, height: @height },
