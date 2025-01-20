@@ -1,6 +1,5 @@
 defmodule Retrotank.Game.Object.Tank do
   alias Retrotank.Game.Core
-  use Core.Object, alive: true, movable: true
 
   alias Core.Coord
   alias Core.Size
@@ -31,7 +30,7 @@ defmodule Retrotank.Game.Object.Tank do
     tank.props.color
   end
 
-  def color(tank, color) when color in [] do
+  def color(tank, color) do
     %{ tank | props: %{ color: color } }
   end
 end

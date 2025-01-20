@@ -16,7 +16,7 @@ defmodule Retrotank.Application do
       {Plug.Cowboy, scheme: :http, plug: Retrotank.Router, options: [port: 8080]},
       {Retrotank.Game.State.GamesRegistry, %{}},
       {Retrotank.Game.State.PlayersRegistry, %{}},
-      {Retrotank.Game.Server.GameState, Retrotank.Utils.Random.uuid}
+      {Retrotank.Game.State.GameState, Retrotank.Utils.Random.uuid}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

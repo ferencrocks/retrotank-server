@@ -25,12 +25,6 @@ defmodule Retrotank.Router do
     send_resp(conn, 200, "Hello Maxik #{game_id}")
   end
 
-  get "/player/ws" do
-    conn
-    |> WebSockAdapter.upgrade(Retrotank.Game.Server.Websocket, [], timeout: 60_000)
-    |> halt()
-  end
-
   match _ do
     send_resp(conn, 404, "Resource not found!")
   end

@@ -1,4 +1,18 @@
 defmodule Retrotank.Game.Core.Object do
+  @type dir() :: :up | :down | :left | :right
+
+  alias Retrotank.Game.Core.Movement
+
+
+  def direction(%{ movement: %Movement{ direction: direction } }) do
+    direction
+  end
+
+  def direction(object, direction) do
+    %{ object | movement: %{ direction: direction } }
+  end
+
+
   defmacro __using__(opts) do
     quote bind_quoted: [opts: opts] do
       alias Retrotank.Game.Core.Coord

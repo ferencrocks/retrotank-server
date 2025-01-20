@@ -2,7 +2,7 @@ defmodule PlayerTest do
   use ExUnit.Case
 
   alias Retrotank.Game.Core.Player
-  alias Retrotank.Game.Server.GameState
+  alias Retrotank.Game.State.GameState
 
   setup do
     game_id = Retrotank.Utils.Random.uuid()
