@@ -15,4 +15,8 @@ defmodule Retrotank do
   def hello do
     :world
   end
+
+  def init do
+    Retrotank.Game.State.GamesRegistry.add("Test Game")
+  end
 end

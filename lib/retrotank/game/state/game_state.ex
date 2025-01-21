@@ -6,25 +6,23 @@ defmodule Retrotank.Game.State.GameState do
   #alias Retrotank.Game.Core.Player
   #alias Retrotank.Game.Core.Players
 
+  alias Retrotank.Game.Core.Game
   alias Retrotank.Game.Core.Object
   alias Retrotank.Game.State.PlayersRegistry
   alias Retrotank.Game.Core.Player
   alias Retrotank.Game.Object.Tank
-  alias Retrotank.Game.State.GamesRegistry
 
 
   # Client
 
-  def start_link(game_id) do
-    server_name = server_name(game_id)
+  def start_link(game = %Game{}) do
+    server_name = server_name(game.id)
 
     Logger.info "Starting GameState server #{server_name}..."
-    GenServer.start_link(__MODULE__, game_id, name: server_name)
+    GenServer.start_link(__MODULE__, game, name: server_name)
   end
 
-  def init(game_id) do
-    game = GamesRegistry.add(game_id, server_name(game_id))
-
+  def init(game = %Game{}) do
     initial_state = %{
       players: MapSet.new(),
       objects: %{},
